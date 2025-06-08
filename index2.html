@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>電波をつなげ！ケーブルタウン</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #f0f8ff;
+    }
+    #game-container {
+      display: none;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 5px;
+      justify-content: center;
+      margin: 20px;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      background-color: #ddd;
+      border: 2px solid #aaa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .house { background-color: #ffdead; }
+    .tower { background-color: #add8e6; }
+    .wire { background-color: #90ee90; }
+    .obstacle { background-color: #aaa; }
+    #result {
+      display: none;
+      margin-top: 20px;
+    }
+    button {
+      font-size: 18px;
+      margin: 10px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="title-screen">
+    <h1>電波をつなげ！ケーブルタウン</h1>
+    <p>ケーブルをつないで町に電波を届けよう！</p>
+    <button onclick="startGame()">スタート</button>
+  </div>
+
+  <div id="game-container">
+    <div id="grid"></div>
+    <button onclick="endGame()">完了！</button>
+  </div>
+
+  <div id="result">
+    <h2>結果発表！</h2>
+    <p id="score"></p>
+    <p id="rank-comment"></p>
+    <button onclick="location.reload()">もういちどプレイ！</button>
+  </div>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const size = 5;
+    const cells = [];
+    let score = 0;
+
+    function startGame() {
+      document.getElementById("title-screen").style.display = "none";
+      document.getElementById("game-container").style.display = "block";
+      for (let i = 0; i < size * size; i++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.index = i;
+        grid.appendChild(cell);
+        cells.push(cell);
+      }
+      setupGrid();
+    }
+
+    function setupGrid() {
+      const towerIndex = 0;
+      const houseIndex = size * size - 1;
+      const obstacleIndex = 12;
+
+      cells[towerIndex].textContent = "📡";
+      cells[towerIndex].classList.add("tower");
+      cells[houseIndex].textContent = "🏠";
+      cells[houseIndex].classList.add("house");
+      cells[obstacleIndex].textContent = "⛔";
+      cells[obstacleIndex].classList.add("obstacle");
+
+      cells.forEach((cell, idx) => {
+        if (!cell.classList.contains("tower") &&
+            !cell.classList.contains("house") &&
+            !cell.classList.contains("obstacle")) {
+          cell.addEventListener("click", () => {
+            if (!cell.classList.contains("wire")) {
+              cell.classList.add("wire");
+              cell.textContent = "🔌";
+              score += 10;
+            }
+          });
+        }
+      });
+    }
+
+    function endGame() {
+      document.getElementById("game-container").style.display = "none";
+      document.getElementById("result").style.display = "block";
+      document.getElementById("score").textContent = `スコア：${score}点`;
+      let comment = "";
+      if (score >= 100) comment = "あなたは地域No.1級のケーブルマスター！";
+      else if (score >= 70) comment = "なかなかやるね！あと少しでトップ！";
+      else comment = "がんばったね！友達にも挑戦してもらおう！";
+      document.getElementById("rank-comment").textContent = comment;
+    }
+  </script>
+</body>
+</html>
